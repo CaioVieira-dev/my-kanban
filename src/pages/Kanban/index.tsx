@@ -12,10 +12,12 @@ export function Kanban() {
                 <ChalkText className="doing">Fazendo</ChalkText>
                 <ChalkText className="done">Feito</ChalkText>
                 <List className="to-do">
-                    <Postsheet color="hsl(130,100%,85%)" >
+                    <Postsheet paperColor="hsl(130,100%,85%)" >
                         Uma nota interessante
                     </Postsheet>
-                    <Postsheet color="hsl(230,100%,85%)" >
+                    <Postsheet
+                        paperColor="hsl(230,100%,85%)"
+                        pinColor="gold" >
                         Outra nota interessante
                     </Postsheet>
                 </List>
