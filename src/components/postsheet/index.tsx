@@ -1,4 +1,4 @@
-
+import { ReactNode } from 'react'
 import styled from 'styled-components'
 
 const pinSvg = `'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 18 18">
@@ -13,7 +13,10 @@ const Paper = styled.div<{ bgImg: string }>`
   min-height: 100px;
   background-image: url(${props => props.bgImg});
   position:relative;
-  `
+  left: 50%;
+  transform:translateX(-50%);
+  margin-bottom: 16px;
+`
 const Note = styled.p`
 width:100%;
 padding:30px 24px 16px 8px;
@@ -32,6 +35,7 @@ background-image: url(${pinSvg});
 
 type PostsheetProps = {
   color: string;
+  children: ReactNode;
 }
 
 export function Postsheet(props: PostsheetProps) {
@@ -47,19 +51,14 @@ export function Postsheet(props: PostsheetProps) {
 
   //Todo, limitar para 350caracteres
   return (
-    <>
 
-      <Paper bgImg={img}><Pin />
-        <Note>Uma tarefa super complexa para ocupar diversas linhas.
-          Uma tarefa super complexa para ocupar diversas linhas,
-          Uma tarefa super complexa para ocupar diversas linhas,
-          Uma tarefa super complexa para ocupar diversas linhas,
-          Uma tarefa super complexa para ocupar diversas linhas,
-          Uma tarefa super complexa para ocupar diversas linhas,
-          Uma tarefa super complexa para ocupar diversas linhas,
-          Uma tarefa super complexa para ocupar diversas linhas,
-        </Note>
-      </Paper>
-    </>
+
+    <Paper bgImg={img}>
+      <Pin />
+      <Note>
+        {props.children}
+      </Note>
+    </Paper>
+
   )
 }

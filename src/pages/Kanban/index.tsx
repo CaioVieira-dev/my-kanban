@@ -1,5 +1,6 @@
 import { Board, ChalkText, List } from './styles'
 import { Logo } from '../../components/Logo'
+import { Postsheet } from '../../components/postsheet'
 
 export function Kanban() {
 
@@ -10,7 +11,14 @@ export function Kanban() {
                 <ChalkText className="to-do">Para fazer</ChalkText>
                 <ChalkText className="doing">Fazendo</ChalkText>
                 <ChalkText className="done">Feito</ChalkText>
-                <List className="to-do"></List>
+                <List className="to-do">
+                    <Postsheet color="hsl(130,100%,85%)" >
+                        Uma nota interessante
+                    </Postsheet>
+                    <Postsheet color="hsl(230,100%,85%)" >
+                        Outra nota interessante
+                    </Postsheet>
+                </List>
                 <List className="doing"></List>
                 <List className="done"></List>
             </Board>

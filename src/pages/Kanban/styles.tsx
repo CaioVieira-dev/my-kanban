@@ -43,6 +43,8 @@ export const List = styled.div`
 width: 100%;
 height: 100%;
 background-color: hsl(155, 80%, 22%);
+padding: 16px 2%;
+
 .to-do&{
   grid-area: postsheetToDo;
 }
