@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+  <g id="pin" transform="translate(-1111 -215)">
+    <circle id="Elipse_1" data-name="Elipse 1" cx="9" cy="9" r="9" transform="translate(1111 215)" fill="red"/>
+    <ellipse id="Elipse_2" data-name="Elipse 2" cx="3.5" cy="2" rx="3.5" ry="2" transform="translate(1121.173 215) rotate(25)" fill="#fff"/>
+  </g>
+</svg>

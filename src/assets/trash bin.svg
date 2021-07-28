@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="224" viewBox="0 0 192 224">
+  <g id="trash_bin" data-name="trash bin" transform="translate(-64 -464)">
+    <g id="Caminho_1" data-name="Caminho 1" transform="translate(96 464)" fill="#aaa">
+      <path d="M 115.8137664794922 219 L 12.18623447418213 219 L -26.02805137634277 5 L 154.0280456542969 5 L 115.8137664794922 219 Z" stroke="none"/>
+      <path d="M -20.05610656738281 10 L 16.37246704101562 214 L 111.6275329589844 214 L 148.0561065673828 10 L -20.05610656738281 10 M -32 0 L 160 0 L 120 224 L 8 224 L -32 0 Z" stroke="none" fill="#707070"/>
+    </g>
+    <rect id="Retângulo_5" data-name="Retângulo 5" width="10" height="168" transform="translate(155 488)" fill="#707070"/>
+    <path id="Caminho_2" data-name="Caminho 2" d="M-14.629,6.71-5.6,4.291l15.417,169.7-9.863,2.734Z" transform="matrix(0.966, 0.259, -0.259, 0.966, 223.867, 485.305)" fill="#707070"/>
+    <path id="Caminho_3" data-name="Caminho 3" d="M0,170.019l9.029,2.419L24.446,2.734,14.583,0Z" transform="matrix(-0.966, 0.259, -0.259, -0.966, 156.243, 652.226)" fill="#707070"/>
+  </g>
+</svg>
