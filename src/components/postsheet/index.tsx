@@ -7,10 +7,12 @@ type PostsheetProps = {
   paperColor?: string;
   pinColor?: string;
   children: ReactNode;
+  refi?: any
+  dragProps?: any;
+  handProps?: any;
 }
 
 export function Postsheet(props: PostsheetProps) {
-
   const paperImg = `'data:image/svg+xml;utf8,
   <svg xmlns="http://www.w3.org/2000/svg" 
   preserveAspectRatio="none" 
@@ -29,14 +31,16 @@ export function Postsheet(props: PostsheetProps) {
 
   //Todo, limitar para 350caracteres
   return (
-
-
-    <Paper bgImg={paperImg}>
+    <Paper
+      ref={props.refi}
+      bgImg={paperImg}
+      {...props.dragProps}
+      {...props.handProps}
+    >
       <Pin bgImg={pinImg} />
       <Note>
         {props.children}
       </Note>
     </Paper>
-
   )
 }

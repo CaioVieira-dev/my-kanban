@@ -5,8 +5,7 @@ export const Paper = styled.div<{ bgImg: string; }>`
   min-height: 100px;
   background-image: url(${props => props.bgImg});
   position:relative;
-  left: 50%;
-  transform:translateX(-50%);
+
   margin-bottom: 16px;
 `
 export const Note = styled.p`

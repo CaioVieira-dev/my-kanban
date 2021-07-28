@@ -44,6 +44,9 @@ width: 100%;
 height: 100%;
 background-color: hsl(155, 80%, 22%);
 padding: 16px 2%;
+display: flex;
+flex-direction:column;
+align-items: center;
 
 .to-do&{
   grid-area: postsheetToDo;
