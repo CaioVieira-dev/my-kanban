@@ -10,7 +10,7 @@ html,body{
 
     width: 100%;
     height: 100%;
-    background-color:gray;
+    background-color:green;
     padding: 0 2%;
 }
 `
