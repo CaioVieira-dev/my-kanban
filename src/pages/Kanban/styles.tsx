@@ -1,9 +1,18 @@
 import styled from 'styled-components'
 
+export const Container = styled.div`
+display: flex;
+gap:16px;
+justify-content: space-around;
+align-items: center;
+padding-top: 24px;
+position: relative;
+`
+
 export const Board = styled.div`
   display: grid; 
   grid-template-columns: 1fr 1fr 1fr; 
-  grid-template-rows: 0.2fr 1.8fr; 
+  grid-template-rows: clamp(42px,0.2fr,42) 1.8fr; 
   gap: 10px 10px; 
   grid-template-areas: 
     "to-do doing done"
@@ -13,6 +22,7 @@ export const Board = styled.div`
   align-items: center; 
   background-color: white;
   padding: 10px;
+  width: 900px;
 
 `
 export const BoardBorders = styled.div`

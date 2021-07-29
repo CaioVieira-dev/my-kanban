@@ -1,4 +1,4 @@
-import { Board, ChalkText, List } from './styles'
+import { Board, ChalkText, List, Container } from './styles'
 import { Logo } from '../../components/Logo'
 import { Postsheet } from '../../components/postsheet'
 import { Trash } from '../../components/Trash'
@@ -304,7 +304,7 @@ export function Kanban() {
     }
 
     return (
-        <>
+        <Container>
             <Logo />
             <DragDropContext onDragEnd={handleOnDragEnd} >
                 <Board>
@@ -317,6 +317,6 @@ export function Kanban() {
                 </Board>
                 <Trash />
             </DragDropContext>
-        </>
+        </Container>
     )
 }
