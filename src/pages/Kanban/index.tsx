@@ -1,6 +1,7 @@
 import { Board, ChalkText, List } from './styles'
 import { Logo } from '../../components/Logo'
 import { Postsheet } from '../../components/postsheet'
+import { Trash } from '../../components/Trash'
 
 import { useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
@@ -75,7 +76,106 @@ const DoneNotes = [
     },
 ]
 
+type ListProps = {
+    postsheets: NoteType[];
+}
 
+
+function ToDoList(props: ListProps) {
+    return <Droppable droppableId="to-dos">
+        {(provided) => (
+
+            <List
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="to-do">
+                {props.postsheets.map((note, index) => <Draggable
+                    key={note.id}
+                    draggableId={note.id}
+                    index={index}
+                >
+                    {(provided) => (
+
+                        <Postsheet
+
+                            dragProps={provided.draggableProps}
+                            handProps={provided.dragHandleProps}
+                            refi={provided.innerRef}
+                            paperColor={note.paperColor || ""}
+                            pinColor={note.pinColor || ""}
+
+                        >{note.note}</Postsheet>
+                    )}
+                </Draggable>)}
+                {provided.placeholder}
+            </List>
+        )}
+    </Droppable>
+}
+
+function DoingList(props: ListProps) {
+    return <Droppable droppableId="doings">
+        {(provided) => (
+
+            <List
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="doing">
+                {props.postsheets.map((note, index) =>
+                    <Draggable
+                        key={note.id}
+                        draggableId={note.id}
+                        index={index}
+                    >
+                        {(provided) => (
+
+                            <Postsheet
+                                dragProps={provided.draggableProps}
+                                handProps={provided.dragHandleProps}
+                                refi={provided.innerRef}
+                                paperColor={note.paperColor || ""}
+                                pinColor={note.pinColor || ""}
+                                key={note.id}
+                            >{note.note}</Postsheet>
+                        )}
+                    </Draggable>
+                )}
+                {provided.placeholder}
+            </List>
+        )}
+    </Droppable>
+}
+function DoneList(props: ListProps) {
+    return <Droppable droppableId="dones">
+        {(provided) => (
+
+            <List
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="done">
+                {props.postsheets.map((note, index) =>
+                    <Draggable
+                        key={note.id}
+                        draggableId={note.id}
+                        index={index}>
+                        {(provided) => (
+                            <Postsheet
+                                dragProps={provided.draggableProps}
+                                handProps={provided.dragHandleProps}
+                                refi={provided.innerRef}
+                                paperColor={note.paperColor || ""}
+                                pinColor={note.pinColor || ""}
+                                key={note.id}>
+                                {note.note}
+                            </Postsheet>
+                        )}
+                    </Draggable>
+                )}
+                {provided.placeholder}
+            </List>
+        )}
+    </Droppable>
+}
 export function Kanban() {
     const [toDos, setToDos] = useState<NoteType[]>(toDoNotes)
     const [doing, setDoing] = useState<NoteType[]>(DoingNotes)
@@ -85,7 +185,11 @@ export function Kanban() {
         if (!result.destination) return;
         const source = result.source.droppableId
         const destination = result.destination.droppableId
-        console.log(result)
+
+        if (destination === "trash") {
+            deleteNote(result.source.index, source);
+            return;
+        }
 
         if (source === destination) {
 
@@ -125,7 +229,6 @@ export function Kanban() {
             case "to-dos":
                 newSource = Array.from(toDos);
                 [item] = newSource.splice(result.source.index, 1)
-                console.log(newSource)
                 setToDos(newSource)
                 break;
             case "doings":
@@ -168,104 +271,52 @@ export function Kanban() {
 
 
     }
+    function deleteNote(sourceIndex: number, source: string) {
+
+        let items;
+        switch (source) {
+            case "to-dos":
+                items = Array.from(toDos);
+                break;
+            case "doings":
+                items = Array.from(doing);
+                break;
+            case "dones":
+                items = Array.from(dones)
+                break;
+        }
+        if (items) {
+            items.splice(sourceIndex, 1);
+
+            switch (source) {
+                case "to-dos":
+                    setToDos(items)
+                    break;
+                case "doings":
+                    setDoing(items)
+                    break;
+                case "dones":
+                    setDones(items)
+                    break;
+            }
+        }
+
+    }
 
     return (
         <>
             <Logo />
-            <Board>
-                <ChalkText className="to-do">Para fazer</ChalkText>
-                <ChalkText className="doing">Fazendo</ChalkText>
-                <ChalkText className="done">Feito</ChalkText>
-                <DragDropContext onDragEnd={handleOnDragEnd} >
-                    <Droppable droppableId="to-dos">
-                        {(provided) => (
-
-                            <List
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                className="to-do">
-                                {toDos.map((note, index) => <Draggable
-                                    key={note.id}
-                                    draggableId={note.id}
-                                    index={index}
-                                >
-                                    {(provided) => (
-
-                                        <Postsheet
-
-                                            dragProps={provided.draggableProps}
-                                            handProps={provided.dragHandleProps}
-                                            refi={provided.innerRef}
-                                            paperColor={note.paperColor || ""}
-                                            pinColor={note.pinColor || ""}
-
-                                        >{note.note}</Postsheet>
-                                    )}
-                                </Draggable>)}
-                                {provided.placeholder}
-                            </List>
-                        )}
-                    </Droppable>
-                    <Droppable droppableId="doings">
-                        {(provided) => (
-
-                            <List
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                className="doing">
-                                {doing.map((note, index) =>
-                                    <Draggable
-                                        key={note.id}
-                                        draggableId={note.id}
-                                        index={index}
-                                    >
-                                        {(provided) => (
-
-                                            <Postsheet
-                                                dragProps={provided.draggableProps}
-                                                handProps={provided.dragHandleProps}
-                                                refi={provided.innerRef}
-                                                paperColor={note.paperColor || ""}
-                                                pinColor={note.pinColor || ""}
-                                                key={note.id}
-                                            >{note.note}</Postsheet>
-                                        )}
-                                    </Draggable>
-                                )}
-                                {provided.placeholder}
-                            </List>
-                        )}
-                    </Droppable>
-                    <Droppable droppableId="dones">
-                        {(provided) => (
-
-                            <List
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                className="done">
-                                {dones.map((note, index) =>
-                                    <Draggable
-                                        key={note.id}
-                                        draggableId={note.id}
-                                        index={index}>
-                                        {(provided) => (
-                                            <Postsheet
-                                                dragProps={provided.draggableProps}
-                                                handProps={provided.dragHandleProps}
-                                                refi={provided.innerRef}
-                                                paperColor={note.paperColor || ""}
-                                                pinColor={note.pinColor || ""}
-                                                key={note.id}>
-                                                {note.note}
-                                            </Postsheet>
-                                        )}
-                                    </Draggable>
-                                )}
-                            </List>
-                        )}
-                    </Droppable>
-                </DragDropContext>
-            </Board>
+            <DragDropContext onDragEnd={handleOnDragEnd} >
+                <Board>
+                    <ChalkText className="to-do">Para fazer</ChalkText>
+                    <ChalkText className="doing">Fazendo</ChalkText>
+                    <ChalkText className="done">Feito</ChalkText>
+                    <ToDoList postsheets={toDos} />
+                    <DoingList postsheets={doing} />
+                    <DoneList postsheets={dones} />
+                </Board>
+                <Trash />
+            </DragDropContext>
         </>
     )
 }
