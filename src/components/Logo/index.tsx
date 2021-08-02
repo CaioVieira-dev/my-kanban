@@ -11,11 +11,22 @@ align-self: flex-start;
 position: fixed;
 top: 2%;
 left: 2%;
+.login&{
+    position: relative;
+    left: 70%;
+    top: 10%;
+    transform: translate(-50%,-30%) rotate(-25deg);
+    
+    font-size:60px;
+}
 @media (max-width:1260px){
     font-size: 60px;
 }
 
 `
-export function Logo() {
-    return <Text>My Kanban</Text>
+type LogoProps = {
+    className?: string;
+}
+export function Logo(props: LogoProps) {
+    return <Text className={props.className}>My Kanban</Text>
 }
