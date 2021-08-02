@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 export const Paper = styled.div<{ bgImg: string; }>`
   max-width:200px;
+
   min-height: 100px;
   background-image: url(${props => props.bgImg});
   position:relative;
@@ -10,8 +11,12 @@ export const Paper = styled.div<{ bgImg: string; }>`
 `
 export const Note = styled.p`
 width:100%;
-padding:30px 24px 16px 8px;
-
+padding:30px 16px 16px 8px;
+font-family:"Montserrat", sans-serif;
+/*handle text overflow*/
+text-align:center;
+overflow:hidden;
+text-overflow: ellipsis;
 
 `
 export const Pin = styled.div<{ bgImg: string }>`

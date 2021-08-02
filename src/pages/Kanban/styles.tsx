@@ -2,11 +2,12 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
 display: flex;
-gap:16px;
-justify-content: space-around;
+
+width: 100%;
 align-items: center;
+justify-content: center;
 padding-top: 24px;
-position: relative;
+
 `
 
 export const Board = styled.div`
@@ -24,6 +25,11 @@ export const Board = styled.div`
   padding: 10px;
   width: 900px;
 
+  @media (max-width:1440px){
+position: absolute;
+top: 24px;
+right: 2%;
+  }
 `
 export const BoardBorders = styled.div`
 padding: 10px;

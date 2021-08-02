@@ -1,11 +1,15 @@
 
 import { Kanban } from './pages/Kanban'
 import { GlobalStyle } from './styles/styles'
+import { NotesContextProvider } from './contexts/NotesContext'
+
 
 function App() {
   return (
     <div className="App">
-      <Kanban />
+      <NotesContextProvider>
+        <Kanban />
+      </NotesContextProvider>
       <GlobalStyle />
     </div>
   );
