@@ -11,7 +11,12 @@ letter-spacing: -3px;
 
 transform: rotate(-25deg);
 
+margin-top: -70px;
+
 .login&{
+
+margin-top: 0;
+
     position: relative;
     left: 70%;
     top: 10%;
