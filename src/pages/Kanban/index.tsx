@@ -5,6 +5,8 @@ import { Trash } from '../../components/Trash'
 import { NotePad } from '../../components/NotePad'
 
 import { useNotes } from '../../hooks/useNotes'
+import { useAuth } from '../../hooks/useAuth'
+import { useHistory } from 'react-router-dom'
 
 import { DragDropContext, Droppable, Draggable, DropResult, DragStart } from 'react-beautiful-dnd'
 
@@ -121,6 +123,9 @@ export function Kanban() {
     const { toDos, dones, doing,
         reorderList, handleChangeList,
         deleteNote, createNote, toggleTrigger, changeColor } = useNotes();
+    const history = useHistory()
+    const { user } = useAuth()
+
 
     function handleOnDragEnd(result: DropResult) {
         if (!result.destination) return;
@@ -159,6 +164,9 @@ export function Kanban() {
 
     }
 
+    if (!user) {
+        history.push('/login')
+    }
 
     return (
         <Container>
