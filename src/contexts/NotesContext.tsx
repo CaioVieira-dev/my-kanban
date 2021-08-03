@@ -1,5 +1,7 @@
-import { useState, createContext, ReactNode } from 'react'
+import { useState, createContext, ReactNode, useEffect } from 'react'
 import { v4 as uuid } from 'uuid';
+import { useAuth } from '../hooks/useAuth'
+import { database } from '../services/firebase'
 
 type NoteType = {
     note: string;
@@ -27,77 +29,16 @@ type NotesContextProviderProps = {
     children: ReactNode;
 }
 
-const toDoNotes = [
-    {
-        note: "Uma tarefa para fazer",
-        paperColor: "hsl(130,100%,85%)",
-        pinColor: "hsl(60,100%,50%)",
-        id: "uuid1"
-    },
-    {
-        note: "Outra tarefa para fazer",
-        paperColor: "hsl(60,100%,85%)",
-        pinColor: "hsl(300,100%,50%)",
-        id: "uuid2"
-    },
-    {
-        note: "Terceira tarefa para fazer",
-        paperColor: "hsl(230,100%,85%)",
-        pinColor: "hsl(0,100%,50%)",
-        id: "uuid3"
-    },
-]
-
-const DoingNotes = [
-    {
-        note: "Uma tarefa fazendo",
-        paperColor: "hsl(0,100%,85%)",
-        pinColor: "hsl(260,100%,50%)",
-        id: "uuid4"
-    },
-    {
-        note: "Outra tarefa fazendo",
-        paperColor: "hsl(30,100%,85%)",
-        pinColor: "hsl(300,100%,50%)",
-        id: "uuid5"
-    },
-    {
-        note: "Terceira tarefa fazendo",
-        paperColor: "hsl(300,100%,85%)",
-        pinColor: "hsl(0,100%,50%)",
-        id: "uuid6"
-    },
-]
-
-const DoneNotes = [
-    {
-        note: "Uma tarefa feita",
-        paperColor: "hsl(230,100%,85%)",
-        pinColor: "hsl(40,100%,50%)",
-        id: "uuid7"
-    },
-    {
-        note: "Outra tarefa feita",
-        paperColor: "hsl(100,100%,85%)",
-        pinColor: "hsl(100,100%,50%)",
-        id: "uuid8"
-    },
-    {
-        note: "Terceira tarefa feita",
-        paperColor: "hsl(70,100%,85%)",
-        pinColor: "hsl(100,100%,50%)",
-        id: "uuid9"
-    },
-]
-
 const notesHueValues = [50, 0, 181, 116, 306, 200, 90]
 
 export const NotesContext = createContext({} as NotesContextType);
 
 export function NotesContextProvider(props: NotesContextProviderProps) {
-    const [toDos, setToDos] = useState<NoteType[]>(toDoNotes);
-    const [doing, setDoing] = useState<NoteType[]>(DoingNotes);
-    const [dones, setDones] = useState<NoteType[]>(DoneNotes);
+    const { user } = useAuth();
+
+    const [toDos, setToDos] = useState<NoteType[]>([]);
+    const [doing, setDoing] = useState<NoteType[]>([]);
+    const [dones, setDones] = useState<NoteType[]>([]);
 
     const [noteContent, setNoteContent] = useState('');
 
@@ -106,10 +47,78 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
 
     const [triggerNewNote, setTriggerNewNote] = useState(false);
 
+    useEffect(() => {
+        const userRef = database.collection('users').doc(user?.id)
+        //whenever user database updates
+        const unsubscribe = userRef.onSnapshot((res) => {
+            //get data
+            const data = res.data();
+            //if data exists
+            if (data) {
+                //format data to an array of arrays
+                const entries = Object.entries(data);
 
+                //pick only the notes
+                const notes = entries.map(item => item[1])
+
+                let toDoList = [] as NoteType[];
+                let doingList = [] as NoteType[];
+                let doneList = [] as NoteType[];
+
+                for (let note of notes) {
+                    switch (note.type) {
+                        case 'todo':
+                            toDoList.push({
+                                note: note.note,
+                                id: note.id,
+                                pinColor: note.pinColor,
+                                paperColor: note.paperColor
+                            })
+                            break;
+                        case 'doing':
+                            doingList.push({
+                                note: note.note,
+                                id: note.id,
+                                pinColor: note.pinColor,
+                                paperColor: note.paperColor
+                            })
+                            break;
+                        case 'done':
+                            doneList.push({
+                                note: note.note,
+                                id: note.id,
+                                pinColor: note.pinColor,
+                                paperColor: note.paperColor
+                            })
+                            break;
+                    }
+                }
+
+                updateToDos(toDoList);
+                updateDoing(doingList);
+                updateDones(doneList);
+
+            }
+
+        })
+        return () => unsubscribe();
+    }, [user])
+
+    async function getNotes() {
+        if (!user) { return }
+
+        const userRef = database.collection('users').doc(user.id)
+        let res;
+        try {
+            res = await userRef.get();
+            const notes = res.data();
+            console.log(notes);
+        } catch (err) {
+            console.error(err)
+        }
+    }
 
     function deleteNote(sourceIndex: number, source: string) {
-
         let items;
         switch (source) {
             case "to-dos":
