@@ -34,7 +34,7 @@ right:10%;
     transform: translate(60px,-20px) rotate(45deg);
 }
 @media (max-width:1440px){
-left:2%;
+left:3%;
 }
 @media (max-height:760px){
     width:calc(229px * 2 / 3);
