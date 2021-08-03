@@ -1,16 +1,25 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-display: flex;
-
-width: 100%;
-align-items: center;
-justify-content: center;
+  display: grid; 
+  grid-template-columns: 1fr 1fr 1fr; 
+  grid-template-rows: 0.01fr 1.8fr 1fr; 
+  gap: 10px 10px; 
+  grid-template-areas: 
+    "logo . user"
+    "notePad board ."
+    ". . trash"; 
+  justify-content: center; 
+  justify-items: center; 
+  align-items: center; 
+  width: 100%; 
 padding-top: 24px;
 
 `
 
 export const Board = styled.div`
+  grid-area: board;
+
   display: grid; 
   grid-template-columns: 1fr 1fr 1fr; 
   grid-template-rows: clamp(42px,0.2fr,42) 1.8fr; 
@@ -25,11 +34,6 @@ export const Board = styled.div`
   padding: 10px;
   width: 900px;
 
-  @media (max-width:1440px){
-position: absolute;
-top: 24px;
-right: 2%;
-  }
 `
 export const BoardBorders = styled.div`
 padding: 10px;

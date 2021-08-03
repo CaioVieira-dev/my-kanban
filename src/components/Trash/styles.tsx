@@ -22,12 +22,14 @@ transition: transform 0.3s ease-in;
 
 `
 export const Container = styled.div`
+grid-area: trash;
+
 position: relative;
 width:229px;
 height: 282px;
 position: fixed;
 bottom:2%;
-right:2%;
+right:10%;
 &:hover ${Lid}{
     transform: translate(60px,-20px) rotate(45deg);
 }
