@@ -1,6 +1,9 @@
 import styled from "styled-components";
 
 export const Container = styled.div<{ hues?: number[] }>`
+grid-area: aria2-2;
+align-self: start;
+
 width: 224px;
 height: 205px;
 border-right: 5px solid hsl( ${props => props.hues !== undefined ? props.hues[1] : 200}, 100%, 85%);
@@ -17,11 +20,8 @@ box-shadow:5px 5px 0px 0px hsl(${props => props.hues !== undefined ? props.hues[
    15px 15px 0px 0px hsl(${props => props.hues !== undefined ? props.hues[4] : 116}, 100%, 85%),
     20px 20px 0px 0px hsl(${props => props.hues !== undefined ? props.hues[5] : 306}, 100%, 85%);
      
-position: fixed;
-top:30%;
-left: 10%;
 @media (max-width:1440px){
-  left: 2%;
+
   z-index:10;
 }
 @media (max-height:760px){

@@ -22,20 +22,17 @@ transition: transform 0.3s ease-in;
 
 `
 export const Container = styled.div`
-grid-area: trash;
+grid-area: aria2-3;
+align-self: start;
 
 position: relative;
 width:229px;
 height: 282px;
-position: fixed;
-bottom:2%;
-right:10%;
+
 &:hover ${Lid}{
     transform: translate(60px,-20px) rotate(45deg);
 }
-@media (max-width:1440px){
-left:3%;
-}
+
 @media (max-height:760px){
     width:calc(229px * 2 / 3);
     height:calc(282px * 2 / 3);

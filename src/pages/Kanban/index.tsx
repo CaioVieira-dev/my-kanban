@@ -1,8 +1,9 @@
-import { Board, ChalkText, List, Container } from './styles'
+import { Board, ChalkText, List, Container, Aria2 } from './styles'
 import { Logo } from '../../components/Logo'
 import { Postsheet } from '../../components/postsheet'
 import { Trash } from '../../components/Trash'
 import { NotePad } from '../../components/NotePad'
+import { UserCard } from '../../components/UserCard'
 
 import { useNotes } from '../../hooks/useNotes'
 import { useAuth } from '../../hooks/useAuth'
@@ -170,14 +171,17 @@ export function Kanban() {
 
     return (
         <Container>
-            <Logo />
-
+            <UserCard />
             <DragDropContext
                 onDragEnd={handleOnDragEnd}
                 onDragStart={handleBefore}
             >
+                <Aria2>
+                    <Logo />
 
-                <NotePad />
+                    <NotePad />
+                    <Trash />
+                </Aria2>
 
                 <Board>
                     <ChalkText className="to-do">Para fazer</ChalkText>
@@ -187,7 +191,6 @@ export function Kanban() {
                     <DoingList postsheets={doing} />
                     <DoneList postsheets={dones} />
                 </Board>
-                <Trash />
             </DragDropContext>
         </Container>
     )
