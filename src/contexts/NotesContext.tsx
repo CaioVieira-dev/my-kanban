@@ -24,7 +24,7 @@ type NotesContextType = {
     createNote: (destination: { destination: string, index: number }) => void;
     toggleTrigger: () => void;
     changeColor: () => void;
-    deleteDb: (id: string) => Promise<void>;
+    deleteDb: (id: string, source: string) => Promise<void>;
 }
 type NotesContextProviderProps = {
     children: ReactNode;
@@ -103,13 +103,26 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
         })
         return () => unsubscribe();
     }, [user])
-    //TODO refazer delete
-    async function deleteDb(id: string) {
+    async function deleteDb(id: string, source: string) {
         const noteRef = database.collection('users').doc(user?.id);
-        let query = {} as any;
-        query[id] = Fieldvalue.delete()
-        const res = await noteRef.update(query)
-        console.log(res)
+        let dbBucket;
+        switch (source) {
+            case "to-dos":
+                dbBucket = "todo";
+                break;
+            case "doings":
+                dbBucket = "doing";
+                break;
+            case "dones":
+                dbBucket = "done";
+                break;
+        }
+        if (dbBucket) {
+            let query = {} as any;
+            query[`${dbBucket}.${id}`] = Fieldvalue.delete();
+            const res = await noteRef.update(query)
+            console.log(res)
+        }
     }
 
     async function createInDb(destination: { destination: string, index: number }) {

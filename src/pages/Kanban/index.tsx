@@ -136,13 +136,13 @@ export function Kanban() {
         if (destination === "trash") {
             switch (source) {
                 case "to-dos":
-                    deleteDb(toDos[result.source.index].id)
+                    deleteDb(toDos[result.source.index].id, source)
                     break;
                 case "doings":
-                    deleteDb(doing[result.source.index].id)
+                    deleteDb(doing[result.source.index].id, source)
                     break;
                 case "dones":
-                    deleteDb(dones[result.source.index].id)
+                    deleteDb(dones[result.source.index].id, source)
                     break;
             }
             deleteNote(result.source.index, source);
