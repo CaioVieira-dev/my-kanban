@@ -56,50 +56,41 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
             const data = res.data();
             //if data exists
             if (data) {
-                //format data to an array of arrays
-                const entries = Object.entries(data);
+                let dbToDo = Object.entries(data.todo);
+                let dbDoing = Object.entries(data.doing);
+                let dbDone = Object.entries(data.done);
 
-                //pick only the notes
-                const notes = entries.map(item => {
-                    return {
-                        type: item[1].type,
-                        note: item[1].note,
-                        pinColor: item[1].pinColor,
-                        paperColor: item[1].paperColor,
-                        id: item[0]
+                let toDoList: NoteType[] = [];
+                if (dbToDo.length > 0) {
+                    for (let note of dbToDo as [string, NoteType][]) {
+                        toDoList.push({
+                            id: note[0],
+                            note: note[1].note,
+                            paperColor: note[1].paperColor,
+                            pinColor: note[1].pinColor,
+                        })
                     }
-                })
-
-                let toDoList = [] as NoteType[];
-                let doingList = [] as NoteType[];
-                let doneList = [] as NoteType[];
-
-                for (let note of notes) {
-                    switch (note.type) {
-                        case 'todo':
-                            toDoList.push({
-                                note: note.note,
-                                id: note.id,
-                                pinColor: note.pinColor,
-                                paperColor: note.paperColor
-                            })
-                            break;
-                        case 'doing':
-                            doingList.push({
-                                note: note.note,
-                                id: note.id,
-                                pinColor: note.pinColor,
-                                paperColor: note.paperColor
-                            })
-                            break;
-                        case 'done':
-                            doneList.push({
-                                note: note.note,
-                                id: note.id,
-                                pinColor: note.pinColor,
-                                paperColor: note.paperColor
-                            })
-                            break;
+                }
+                let doingList: NoteType[] = [];
+                if (dbDoing.length > 0) {
+                    for (let note of dbDoing as [string, NoteType][]) {
+                        doingList.push({
+                            id: note[0],
+                            note: note[1].note,
+                            paperColor: note[1].paperColor,
+                            pinColor: note[1].pinColor,
+                        })
+                    }
+                }
+                let doneList: NoteType[] = [];
+                if (dbDone.length > 0) {
+                    for (let note of dbDone as [string, NoteType][]) {
+                        doneList.push({
+                            id: note[0],
+                            note: note[1].note,
+                            paperColor: note[1].paperColor,
+                            pinColor: note[1].pinColor,
+                        })
                     }
                 }
 
@@ -112,13 +103,47 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
         })
         return () => unsubscribe();
     }, [user])
-
+    //TODO refazer delete
     async function deleteDb(id: string) {
         const noteRef = database.collection('users').doc(user?.id);
         let query = {} as any;
         query[id] = Fieldvalue.delete()
         const res = await noteRef.update(query)
         console.log(res)
+    }
+
+    async function createInDb(destination: { destination: string, index: number }) {
+        const note: any = assembleNote();
+        if (!note) return;
+        note.index = destination.index;
+        let dbBucket;
+        switch (destination.destination) {
+            case "to-dos":
+                dbBucket = "todo";
+                break;
+            case "doings":
+                dbBucket = "doing";
+                break;
+            case "dones":
+                dbBucket = "done";
+                break;
+        }
+        //set database refference
+        const notesRef = database.collection('users').doc(user?.id)
+        //create a blank object
+        const noteObject: any = {};
+        noteObject[note.id] = note
+        //set blank object
+        const query: any = {};
+        //use blank object to set field of database
+        query[dbBucket || 'none'] = noteObject;
+        //execute database action
+        const res = await notesRef.set(query, { merge: true });
+        console.log(res)
+
+        updateNewNoteContent('')
+
+
     }
 
     function deleteNote(sourceIndex: number, source: string) {
@@ -233,6 +258,7 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
     }
 
     function createNote(destination: { destination: string, index: number }) {
+        createInDb(destination)
         const note = assembleNote();
         if (!note) return;
 
