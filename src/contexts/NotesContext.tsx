@@ -1,7 +1,7 @@
 import { useState, createContext, ReactNode, useEffect } from 'react'
 import { v4 as uuid } from 'uuid';
 import { useAuth } from '../hooks/useAuth'
-import { database } from '../services/firebase'
+import { database, Fieldvalue } from '../services/firebase'
 
 type NoteType = {
     note: string;
@@ -24,6 +24,7 @@ type NotesContextType = {
     createNote: (destination: { destination: string, index: number }) => void;
     toggleTrigger: () => void;
     changeColor: () => void;
+    deleteDb: (id: string) => Promise<void>;
 }
 type NotesContextProviderProps = {
     children: ReactNode;
@@ -59,7 +60,15 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
                 const entries = Object.entries(data);
 
                 //pick only the notes
-                const notes = entries.map(item => item[1])
+                const notes = entries.map(item => {
+                    return {
+                        type: item[1].type,
+                        note: item[1].note,
+                        pinColor: item[1].pinColor,
+                        paperColor: item[1].paperColor,
+                        id: item[0]
+                    }
+                })
 
                 let toDoList = [] as NoteType[];
                 let doingList = [] as NoteType[];
@@ -104,18 +113,12 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
         return () => unsubscribe();
     }, [user])
 
-    async function getNotes() {
-        if (!user) { return }
-
-        const userRef = database.collection('users').doc(user.id)
-        let res;
-        try {
-            res = await userRef.get();
-            const notes = res.data();
-            console.log(notes);
-        } catch (err) {
-            console.error(err)
-        }
+    async function deleteDb(id: string) {
+        const noteRef = database.collection('users').doc(user?.id);
+        let query = {} as any;
+        query[id] = Fieldvalue.delete()
+        const res = await noteRef.update(query)
+        console.log(res)
     }
 
     function deleteNote(sourceIndex: number, source: string) {
@@ -313,7 +316,8 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
             updateNewNoteContent,
             createNote,
             toggleTrigger,
-            changeColor
+            changeColor,
+            deleteDb
         }}>
             {props.children}
         </NotesContext.Provider>

@@ -123,7 +123,7 @@ export function Kanban() {
 
     const { toDos, dones, doing,
         reorderList, handleChangeList,
-        deleteNote, createNote, toggleTrigger, changeColor } = useNotes();
+        deleteNote, createNote, toggleTrigger, changeColor, deleteDb } = useNotes();
     const history = useHistory()
     const { user } = useAuth()
 
@@ -134,6 +134,17 @@ export function Kanban() {
         const destination = result.destination.droppableId
 
         if (destination === "trash") {
+            switch (source) {
+                case "to-dos":
+                    deleteDb(toDos[result.source.index].id)
+                    break;
+                case "doings":
+                    deleteDb(doing[result.source.index].id)
+                    break;
+                case "dones":
+                    deleteDb(dones[result.source.index].id)
+                    break;
+            }
             deleteNote(result.source.index, source);
             return;
         }
