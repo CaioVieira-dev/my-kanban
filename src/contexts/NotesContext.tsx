@@ -9,6 +9,13 @@ type NoteType = {
     pinColor: string;
     id: string;
 }
+type DbDataType = {
+    note: string;
+    paperColor: string;
+    pinColor: string;
+    id: string;
+    index: number;
+}
 type NotesContextType = {
     toDos: NoteType[];
     doing: NoteType[];
@@ -56,9 +63,13 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
             const data = res.data();
             //if data exists
             if (data) {
-                let dbToDo = Object.entries(data.todo);
-                let dbDoing = Object.entries(data.doing);
-                let dbDone = Object.entries(data.done);
+                let dbToDo: [string, DbDataType][] = Object.entries(data.todo);
+                let dbDoing: [string, DbDataType][] = Object.entries(data.doing);
+                let dbDone: [string, DbDataType][] = Object.entries(data.done);
+
+                dbToDo.sort((a, b) => { return a[1].index - b[1].index });
+                dbDoing.sort((a, b) => { return a[1].index - b[1].index });
+                dbDone.sort((a, b) => { return a[1].index - b[1].index });
 
                 let toDoList: NoteType[] = [];
                 if (dbToDo.length > 0) {
