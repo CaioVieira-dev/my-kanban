@@ -8,14 +8,10 @@ type NoteType = {
     paperColor: string;
     pinColor: string;
     id: string;
-}
-type DbDataType = {
-    note: string;
-    paperColor: string;
-    pinColor: string;
-    id: string;
     index: number;
+
 }
+
 type NotesContextType = {
     toDos: NoteType[];
     doing: NoteType[];
@@ -28,10 +24,10 @@ type NotesContextType = {
     reorderList: (source: { source: string, index: number }, destination: { destination: string, index: number }) => void;
     handleChangeList: (source: { source: string, index: number }, destination: { destination: string, index: number }) => void;
     updateNewNoteContent: (newContent: string) => void;
-    createNote: (destination: { destination: string, index: number }) => void;
     toggleTrigger: () => void;
     changeColor: () => void;
     deleteDb: (id: string, source: string) => Promise<void>;
+    createInDb: (destination: { destination: string, index: number }) => Promise<void>;
 }
 type NotesContextProviderProps = {
     children: ReactNode;
@@ -63,9 +59,9 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
             const data = res.data();
             //if data exists
             if (data) {
-                let dbToDo: [string, DbDataType][] = Object.entries(data.todo);
-                let dbDoing: [string, DbDataType][] = Object.entries(data.doing);
-                let dbDone: [string, DbDataType][] = Object.entries(data.done);
+                let dbToDo: [string, NoteType][] = Object.entries(data.todo);
+                let dbDoing: [string, NoteType][] = Object.entries(data.doing);
+                let dbDone: [string, NoteType][] = Object.entries(data.done);
 
                 dbToDo.sort((a, b) => { return a[1].index - b[1].index });
                 dbDoing.sort((a, b) => { return a[1].index - b[1].index });
@@ -79,6 +75,7 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
                             note: note[1].note,
                             paperColor: note[1].paperColor,
                             pinColor: note[1].pinColor,
+                            index: note[1].index,
                         })
                     }
                 }
@@ -90,6 +87,7 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
                             note: note[1].note,
                             paperColor: note[1].paperColor,
                             pinColor: note[1].pinColor,
+                            index: note[1].index,
                         })
                     }
                 }
@@ -101,6 +99,7 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
                             note: note[1].note,
                             paperColor: note[1].paperColor,
                             pinColor: note[1].pinColor,
+                            index: note[1].index,
                         })
                     }
                 }
@@ -131,41 +130,111 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
         if (dbBucket) {
             let query = {} as any;
             query[`${dbBucket}.${id}`] = Fieldvalue.delete();
-            const res = await noteRef.update(query)
-            console.log(res)
+            try {
+                await noteRef.update(query)
+            } catch (err) {
+                console.error(err);
+            }
+
         }
     }
 
     async function createInDb(destination: { destination: string, index: number }) {
         const note: any = assembleNote();
         if (!note) return;
-        note.index = destination.index;
         let dbBucket;
+        let list;
         switch (destination.destination) {
             case "to-dos":
                 dbBucket = "todo";
+                list = Array.from(toDos)
                 break;
             case "doings":
                 dbBucket = "doing";
+                list = Array.from(doing)
                 break;
             case "dones":
                 dbBucket = "done";
+                list = Array.from(dones)
                 break;
+        }
+        if (list) {
+            list.splice(destination.index, 0, note);
+            let items = {} as any;
+            for (let i = 0; i < list.length; i++) {
+                list[i].index = destination.index;
+                items[list[i].id] = list[i]
+            }
+            console.log(items)
+            //set database refference
+            const notesRef = database.collection('users').doc(user?.id)
+
+            //set blank object
+            const query: any = {};
+            //use blank object to set field of database
+            query[dbBucket || 'none'] = items;
+            try {
+                //execute database action
+                await notesRef.update(query);
+            } catch (err) { console.error(err); }
+
+
+            updateNewNoteContent('')
+        }
+
+
+
+
+    }
+
+    async function reorderDbList(newOrder: NoteType[], bucket: "todo" | "doing" | "done") {
+        let items = {} as any;
+        for (let i = 0; i < newOrder.length; i++) {
+            //define keys for items
+            items[newOrder[i].id] = newOrder[i]
         }
         //set database refference
         const notesRef = database.collection('users').doc(user?.id)
-        //create a blank object
-        const noteObject: any = {};
-        noteObject[note.id] = note
         //set blank object
         const query: any = {};
         //use blank object to set field of database
-        query[dbBucket || 'none'] = noteObject;
-        //execute database action
-        const res = await notesRef.set(query, { merge: true });
-        console.log(res)
+        query[bucket] = items;
+        try {
+            //execute database action
+            await notesRef.update(query);
+        } catch (err) { console.error(err); }
 
-        updateNewNoteContent('')
+    }
+    async function handleChangeListInDb(sourceItems: NoteType[], sourceBucket: "todo" | "doing" | "done",
+        destinationItems: NoteType[], destinationBucket: "todo" | "doing" | "done") {
+        console.log('handle change', sourceItems.length)
+        let source = {} as any;
+        for (let i = 0; i < sourceItems.length; i++) {
+            source[sourceItems[i].id] = sourceItems[i];
+            source[sourceItems[i].id].index = i;
+
+        }
+        let destination = {} as any;
+        for (let i = 0; i < destinationItems.length; i++) {
+            destination[destinationItems[i].id] = destinationItems[i];
+            destination[destinationItems[i].id].index = i;
+        }
+
+        //set database refference
+        const notesRef = database.collection('users').doc(user?.id)
+        //set blank object
+        const query: any = {};
+
+        //use blank object to set field of database
+        query[sourceBucket] = source;
+        query[destinationBucket] = destination;
+        //execute database action
+        try {
+            await notesRef.update(query);
+
+        } catch (err) {
+            console.error(err)
+        }
 
 
     }
@@ -218,16 +287,20 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
         if (items) {
             const [reorderedItem] = items.splice(source.index, 1);
             items.splice(destination.index, 0, reorderedItem);
+            //update index key
+            for (let i = 0; i < items.length; i++) {
+                items[i].index = i;
+            }
 
             switch (source.source) {
                 case "to-dos":
-                    updateToDos(items)
+                    reorderDbList(items, 'todo')
                     break;
                 case "doings":
-                    updateDoing(items)
+                    reorderDbList(items, 'doing')
                     break;
                 case "dones":
-                    updateDones(items)
+                    reorderDbList(items, 'done')
                     break;
             }
         }
@@ -235,86 +308,55 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
     function handleChangeList(source: { source: string, index: number }
         , destination: { destination: string, index: number }) {
         let newSource;
+        let sourceBucket;
         let item;
         switch (source.source) {
             case "to-dos":
+                sourceBucket = "todo"
                 newSource = Array.from(toDos);
+                console.log('before', newSource.length);
                 [item] = newSource.splice(source.index, 1)
-                updateToDos(newSource)
+                console.log('after', newSource.length);
                 break;
             case "doings":
+                sourceBucket = "doing"
                 newSource = Array.from(doing);
                 [item] = newSource.splice(source.index, 1)
-                updateDoing(newSource)
                 break;
             case "dones":
+                sourceBucket = 'done'
                 newSource = Array.from(dones);
                 [item] = newSource.splice(source.index, 1)
-                updateDones(newSource)
                 break;
         }
+        if (!newSource || !sourceBucket) { return }
         if (item !== undefined) {
 
             let newDestination;
+            let destinationBucket;
             switch (destination.destination) {
                 case "to-dos":
                     newDestination = Array.from(toDos)
                     newDestination.splice(destination.index, 0, item)
-                    updateToDos(newDestination)
+                    destinationBucket = "todo";
                     break;
                 case "doings":
-
                     newDestination = Array.from(doing)
-
                     newDestination.splice(destination.index, 0, item)
+                    destinationBucket = 'doing'
 
-                    updateDoing(newDestination)
                     break;
                 case "dones":
 
                     newDestination = Array.from(dones)
                     newDestination.splice(destination.index, 0, item)
-                    updateDones(newDestination)
+                    destinationBucket = "done"
                     break;
             }
+            if (!newDestination || !destinationBucket) { return }
+            handleChangeListInDb(newSource, sourceBucket as "todo" | "doing" | "done",
+                newDestination, destinationBucket as "todo" | "doing" | "done")
         }
-
-    }
-
-    function createNote(destination: { destination: string, index: number }) {
-        createInDb(destination)
-        const note = assembleNote();
-        if (!note) return;
-
-        let items;
-        switch (destination.destination) {
-            case "to-dos":
-                items = Array.from(toDos)
-                break;
-            case "doings":
-                items = Array.from(doing);
-                break;
-            case "dones":
-                items = Array.from(dones)
-                break;
-        }
-        if (items) {
-            items.splice(destination.index, 0, note)
-            switch (destination.destination) {
-                case "to-dos":
-                    updateToDos(items)
-                    break;
-                case "doings":
-                    updateDoing(items)
-                    break;
-                case "dones":
-                    updateDones(items)
-                    break;
-            }
-            //reset note
-            updateNewNoteContent('')
-        }
-
 
     }
 
@@ -364,10 +406,10 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
             reorderList,
             handleChangeList,
             updateNewNoteContent,
-            createNote,
             toggleTrigger,
             changeColor,
-            deleteDb
+            deleteDb,
+            createInDb
         }}>
             {props.children}
         </NotesContext.Provider>

@@ -16,6 +16,7 @@ type NoteType = {
     paperColor: string;
     pinColor: string;
     id: string;
+    index: number;
 }
 
 
@@ -123,7 +124,7 @@ export function Kanban() {
 
     const { toDos, dones, doing,
         reorderList, handleChangeList,
-        deleteNote, createNote, toggleTrigger, changeColor, deleteDb } = useNotes();
+        deleteNote, createInDb, toggleTrigger, changeColor, deleteDb } = useNotes();
     const history = useHistory()
     const { user } = useAuth()
 
@@ -159,7 +160,7 @@ export function Kanban() {
         if (source === "NewNotes") {
             console.log(result)
             //criar card
-            createNote({ destination, index: result.destination.index })
+            createInDb({ destination, index: result.destination.index })
             changeColor();
             return;
         }
