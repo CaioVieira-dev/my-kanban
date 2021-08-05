@@ -17,14 +17,12 @@ type NotesContextType = {
     doing: NoteType[];
     dones: NoteType[];
     noteContent: string;
-    triggerNewNote: boolean;
     noteColors: number[];
 
     deleteNote: (sourceIndex: number, source: string) => void;
     reorderList: (source: { source: string, index: number }, destination: { destination: string, index: number }) => void;
     handleChangeList: (source: { source: string, index: number }, destination: { destination: string, index: number }) => void;
     updateNewNoteContent: (newContent: string) => void;
-    toggleTrigger: () => void;
     changeColor: () => void;
     deleteDb: (id: string, source: string) => Promise<void>;
     createInDb: (destination: { destination: string, index: number }) => Promise<void>;
@@ -47,9 +45,6 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
     const [noteContent, setNoteContent] = useState('');
 
     const [noteColors, setNoteColors] = useState(notesHueValues);
-
-
-    const [triggerNewNote, setTriggerNewNote] = useState(false);
 
     useEffect(() => {
         const userRef = database.collection('users').doc(user?.id)
@@ -373,10 +368,6 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
         }
     }
 
-    function toggleTrigger() {
-        setTriggerNewNote(!triggerNewNote)
-    }
-
     function updateNewNoteContent(newContent: string) { setNoteContent(newContent) }
 
     function updateToDos(updatedList: NoteType[]) { setToDos(updatedList) }
@@ -399,14 +390,12 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
             doing,
             dones,
             noteContent,
-            triggerNewNote,
             noteColors,
 
             deleteNote,
             reorderList,
             handleChangeList,
             updateNewNoteContent,
-            toggleTrigger,
             changeColor,
             deleteDb,
             createInDb

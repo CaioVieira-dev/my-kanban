@@ -2,16 +2,11 @@ import { Container, NewNote, NoteDragger, NoteWrapper } from './styles'
 import { Draggable, Droppable } from 'react-beautiful-dnd'
 
 import { useNotes } from '../../hooks/useNotes'
-import { useEffect } from 'react';
-
-
-
 
 
 export function NotePad() {
     const { noteContent
         , updateNewNoteContent,
-        triggerNewNote: trigger, toggleTrigger,
         noteColors } = useNotes();
 
     const dragger = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 20 20">
@@ -25,14 +20,6 @@ export function NotePad() {
   </svg>
   `
 
-    useEffect(() => {
-
-
-        if (trigger) {
-
-            toggleTrigger();
-        }
-    }, [trigger, toggleTrigger])
 
     function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
         updateNewNoteContent(e.target.value)

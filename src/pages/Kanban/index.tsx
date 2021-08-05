@@ -9,7 +9,7 @@ import { useNotes } from '../../hooks/useNotes'
 import { useAuth } from '../../hooks/useAuth'
 import { useHistory } from 'react-router-dom'
 
-import { DragDropContext, Droppable, Draggable, DropResult, DragStart } from 'react-beautiful-dnd'
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
 
 type NoteType = {
     note: string;
@@ -124,7 +124,7 @@ export function Kanban() {
 
     const { toDos, dones, doing,
         reorderList, handleChangeList,
-        deleteNote, createInDb, toggleTrigger, changeColor, deleteDb } = useNotes();
+        deleteNote, createInDb, changeColor, deleteDb } = useNotes();
     const history = useHistory()
     const { user } = useAuth()
 
@@ -170,12 +170,6 @@ export function Kanban() {
 
     }
 
-    function handleBefore(initial: DragStart) {
-        if (initial.source.droppableId === "NewNotes") {
-            toggleTrigger();
-        }
-
-    }
 
     if (!user) {
         history.push('/login')
@@ -186,7 +180,6 @@ export function Kanban() {
             <UserCard />
             <DragDropContext
                 onDragEnd={handleOnDragEnd}
-                onDragStart={handleBefore}
             >
                 <Aria2>
                     <Logo />
