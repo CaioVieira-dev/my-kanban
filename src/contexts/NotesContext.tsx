@@ -157,9 +157,10 @@ export function NotesContextProvider(props: NotesContextProviderProps) {
             list.splice(destination.index, 0, note);
             let items = {} as any;
             for (let i = 0; i < list.length; i++) {
-                list[i].index = destination.index;
+                list[i].index = i;
                 items[list[i].id] = list[i]
             }
+
             console.log(items)
             //set database refference
             const notesRef = database.collection('users').doc(user?.id)
